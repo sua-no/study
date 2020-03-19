@@ -17,7 +17,7 @@ function height (){
         console.log("true");
     }else{
         btn.classList.remove('visible');
-        console.log("fauls");
+        console.log("false");
     }
 }
 window.addEventListener('scroll',function(){
