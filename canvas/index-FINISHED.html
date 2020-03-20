@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+
+<body>
+  <canvas id="draw" width="800" height="800"></canvas>
+  <!-- width:300,height:150 기본 세팅.canvas 지원하지 않는 브라우저에서 이미지로 대체 가능 -->
+  <script>
+    const canvas = document.querySelector('#draw');
+    const ctx = canvas.getContext('2d'); //getContext("2d") : 2d그래픽 얻게됨. 
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    //ctx.strokeStyle = '#BADA55'; //strokeStyle:외곽선색
+    ctx.lineJoin = 'round'; // lineJoin : 선의 연결 지점 스타일 원형
+    ctx.lineCap = 'round'; // lineCap : 선의 끝 부분 스타일 원형
+    ctx.lineWidth = 100;
+    //ctx.globalCompositeOperation = 'multiply'; //globalCompositeOperation:기존 도형 위에 새도형 올라가면 색의 변화
+
+    let isDrawing = false; //그리는 중인지 아닌지 판별
+    let lastX = 0; //시작지점의 X좌표
+    let lastY = 0; //시작지점의 Y좌표
+    let hue = 0; //기본 색상 red
+    let direction = true; //선의 넓이를 정하는 변수
+
+    function draw(e) {
+      if (!isDrawing) return; //true일때(마우스 뗏을 때) 실행 중지
+      console.log(e);
+      ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`; //hsl 색상 표기법
+      ctx.beginPath(); // 새로운 경로 설정. beginPath():새로운 경로 명령하는 함수.
+      // start from
+      ctx.moveTo(lastX, lastY); //moveTo(x,y):해당 좌표값 으로 펜 이동
+      // go to
+      ctx.lineTo(e.offsetX, e.offsetY); //lineTo(x,y):해당 좌표값까지 그림
+      ctx.stroke(); // 윤곽선을 이용해 도형을 그림 (!)
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+
+      hue++; //색 변경
+      if (hue >= 360) {
+        hue = 0;
+      }
+      if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) { //선의 굵기 1-100까지
+        direction = !direction;
+      }
+
+      if (direction) {
+        ctx.lineWidth++; //선의 굵기 증가
+      } else {
+        ctx.lineWidth--; //감소
+      }
+
+    }
+
+    canvas.addEventListener('mousedown', (e) => { //마우스 눌려있을 때
+      isDrawing = true; //그리는 중으로 변경
+      [lastX, lastY] = [e.offsetX, e.offsetY]; //마우스 위치에 선 그림
+    });
+
+
+    canvas.addEventListener('mousemove', draw); //마우스 움직일때
+    canvas.addEventListener('mouseup', () => isDrawing = false); //마우스 뗏을 때
+    canvas.addEventListener('mouseout', () => isDrawing = false); //캔버스 밖으로 나갔을 때
+  </script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+    }
+  </style>
+
+</body>
+
+</html>
