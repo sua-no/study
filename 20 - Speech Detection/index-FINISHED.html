@@ -1,45 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Speech Detection</title>
 </head>
+
 <body>
 
   <div class="words" contenteditable>
+    <!-- contenteditable : 사용자가 요소를 편집할 수 있는지 나타내는 열거형 특성 -->
   </div>
 
-<script>
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  <script>
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  const recognition = new SpeechRecognition();
-  recognition.interimResults = true;
-  recognition.lang = 'en-US';
-  
-  let p = document.createElement('p');
-  const words = document.querySelector('.words');
-  words.appendChild(p);
+    const recognition = new SpeechRecognition();
+    recognition.interimResults = true; //아직 끝나지 않은 상태의 음성을 받을 것인지(true) 아닌지를 (false)설정
+    recognition.lang = 'en-US'; //언어 설정. 설정하지 않으면 사용자 에이전트 언어설정 사용됨
 
-  recognition.addEventListener('result', e => {
-    const transcript = Array.from(e.results)
-      .map(result => result[0])
-      .map(result => result.transcript)
-      .join('');
+    let p = document.createElement('p');
+    const words = document.querySelector('.words');
+    words.appendChild(p);
 
-      const poopScript = transcript.replace(/poop|poo|shit|dump/gi, '💩');
+    recognition.addEventListener('result', e => { //음성 인식 서비스가 결과를 반환하면 Web Speech API의 결과 이벤트가 발생
+      console.log(e.results);
+
+      const transcript = Array.from(e.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('');
+        
+      console.log(transcript);
+
+
+      const poopScript = transcript.replace(/poop|poo|shit|dump/gi, '💩'); //.replace() : 특정 문자열을 찾아 다른 문자열로 바꾸는 메서드
       p.textContent = poopScript;
 
-      if (e.results[0].isFinal) {
+      if (e.results[0].isFinal) { //결과가 최종 (true)인지 아닌지 (false)
         p = document.createElement('p');
         words.appendChild(p);
       }
-  });
+    });
+    recognition.addEventListener('end', recognition.start);
 
-  recognition.addEventListener('end', recognition.start);
+    recognition.start(); //SpeechRecognition.start() : 음성인식 서비스 시작 메서드
 
-  recognition.start();
-
-</script>
+  </script>
 
 
   <style>
@@ -59,14 +66,14 @@
       margin: 50px auto;
       background: white;
       border-radius: 5px;
-      box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
       padding: 1rem 2rem 1rem 5rem;
       background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
       background-size: 100% 3rem;
       position: relative;
       line-height: 3rem;
     }
-    
+
     p {
       margin: 0 0 3rem;
     }
@@ -84,4 +91,5 @@
   </style>
 
 </body>
+
 </html>
